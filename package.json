@@ -1,0 +1,20 @@
+{
+  "name": "surveys",
+  "version": "1.0.0",
+  "description": "testing our database connection to our MongoDB on Atlas Cluster",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Robin Teuwens",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-generator": "^4.16.1",
+    "mongodb": "^3.2.6",
+    "mongoose": "^5.5.12",
+    "path": "^0.12.7"
+  }
+}
