@@ -21,8 +21,9 @@ const {
     MONGO_URI
 } = process.env;
 
-const options = {
-    useNewUrlParser: true
+var options = {
+    useNewUrlParser: true,
+    dbName: MONGO_DATABASE
 };
 
 // set up database connection
@@ -45,6 +46,34 @@ const app = express();
 
 // home route
 app.get('/', (req, res) => res.send('Hello World!'));
+
+// add a hard coded transaction to test
+const Transaction = require('./api/models/transaction');
+app.get('/transaction', (req, res, next) => {
+    const transaction = new Transaction({
+        ticker: 'AAPL',
+        tradeDate: new Date(),
+        transType: 'BUY',
+        quantity: 100,
+        price: 189,
+        currency: 'USD'
+    });
+
+    transaction.save()
+        .then(result => {
+            console.log(result);
+            res.status(201).json({
+                message: 'Handling POST requests to /products',
+                loggedTransaction: result
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
+});
 
 // configuring the server where to run/listen
 app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}`));
