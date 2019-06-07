@@ -2,48 +2,17 @@
 require('dotenv').config();
 
 // imports
-const path = require('path');
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require("body-parser");
-const chalk = require('chalk');
-
-// route imports
-const userRoutes = require("./api/users/user.routes");
-
-// give colors to console text
-const connected = chalk.bold.cyan;
-const error = chalk.bold.yellow;
+const bodyParser = require('body-parser');
 
 // environment variables with which to configure the app
 const {
     HOST,
-    PORT,
-    MONGO_USERNAME,
-    MONGO_PASSWORD,
-    MONGO_DATABASE,
-    MONGO_URI
+    PORT
 } = process.env;
 
-var options = {
-    useNewUrlParser: true,
-    dbName: MONGO_DATABASE
-};
-
-// set up database connection
-const uri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_URI}`;
-mongoose.connect(uri, options);
-const db = mongoose.connection;
-
-// check connection
-db.once('open', () => {
-    console.log(connected(`connected to ${MONGO_DATABASE} at ${uri}`));
-});
-
-// if there are errors
-db.on('error', (err) => {
-    console.log(error(`Mongoose default error: ${err}`));
-});
+// import db from _helpers
+const db = require('./api/_helpers/database')
 
 // initialize application
 const app = express();
@@ -51,7 +20,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Routes which should handle requests
-app.use("/user", userRoutes);
+const userRoutes = require('./api/users/user.routes');
+app.use('/user', userRoutes);
 
 // home route
 app.get('/', (req, res) => res.send('Hello World!'));
