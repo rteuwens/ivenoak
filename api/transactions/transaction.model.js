@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-var transactionSchema = new Schema({
+const transactionSchema = new Schema({
 
     ticker: String,
     tradeDate: Date,

@@ -4,15 +4,20 @@
   "description": "testing our database connection to our MongoDB on Atlas Cluster",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "author": "Robin Teuwens",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-generator": "^4.16.1",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.6",
     "mongoose": "^5.5.12",
     "path": "^0.12.7"
