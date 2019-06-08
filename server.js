@@ -1,9 +1,13 @@
 // to read our .env file
 require('dotenv').config();
 
+// import database connection from _helpers
+require('./api/_helpers/database')
+
 // imports
 const express = require('express');
 const bodyParser = require('body-parser');
+const userRoutes = require('./api/users/user.routes');
 
 // environment variables with which to configure the app
 const {
@@ -11,16 +15,12 @@ const {
     PORT
 } = process.env;
 
-// import db from _helpers
-const db = require('./api/_helpers/database')
-
 // initialize application
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Routes which should handle requests
-const userRoutes = require('./api/users/user.routes');
 app.use('/user', userRoutes);
 
 // home route

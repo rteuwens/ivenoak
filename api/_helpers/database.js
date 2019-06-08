@@ -25,16 +25,24 @@ var options = {
 
 // build connection string
 const uri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_URI}`;
-console.log(uri);
 
 // connect
-mongoose.connect(uri, options, (err) => {
-    if (err) {
-        throw err;
-    } else {
-        console.log(connected(`connected to ${MONGO_DATABASE} at ${uri}`));
-    };
+mongoose.connect(uri, options)
+
+// to avoid the error: "DeprecationWarning: collection.ensureIndex is deprecated." 
+mongoose.set('useCreateIndex', true);
+
+// listeners
+mongoose.connection.on('connected', () => {
+    console.log(connected(`Connected to ${MONGO_DATABASE} at ${uri}`));
+});
+mongoose.connection.on('error', (err) => {
+    console.log(error(`Error: ${err}`));
+});
+mongoose.connection.on('disconnected', () => {
+    console.log(disconnected(`Lost connection to ${MONGO_DATABASE}`));
 });
 
-//export this function and imported by ./../../server.js
+
+// imported by ./../../server.js
 module.exports = mongoose.connection;
