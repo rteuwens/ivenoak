@@ -1,30 +1,33 @@
-// to read our .env file
+// to read our .env file for environment variables
 require('dotenv').config();
 
-// imports
+// third-party imports
 const express = require('express');
-const bodyParser = require('body-parser');
+const cors = require('cors');
 
-// environment variables with which to configure the app
-const {
-    HOST,
-    PORT
-} = process.env;
-
-// import db from _helpers
-const db = require('./api/_helpers/database')
+// local imports
+const connection = require('./api/_helpers/database');
+const userRoutes = require('./api/users/user.routes');
 
 // initialize application
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // Routes which should handle requests
-const userRoutes = require('./api/users/user.routes');
 app.use('/user', userRoutes);
 
 // home route
 app.get('/', (req, res) => res.send('Hello World!'));
 
 // configuring the server where to run/listen
+const {
+    HOST,
+    PORT
+} = process.env;
 app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}`));
