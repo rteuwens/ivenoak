@@ -7,7 +7,6 @@ const router = express.Router();
 // model
 const User = require('./user.model');
 
-
 // routes
 router.post('/sign-up', (req, res, next) => {
     User.findOne({ email: req.body.email })
@@ -22,25 +21,32 @@ router.post('/sign-up', (req, res, next) => {
                     email: req.body.email,
                     password: req.body.password 
                 });
-                // the below method handles the hashing with bcrypt
-                User.createUser(newUser, (err, user) => {
-                    if (err) throw err;
-                    res.send(user).end();
+                newUser.save( (err) => {
+                    if (err) {
+                        return res.status(401).json({
+                            message: 'Something went wrong when registering',
+                            body: err.message
+                        });  
+                    }; 
+                    res.status(200).json({
+                        message: 'User registered',
+                        body: newUser
+                    });
                 });
             }
         });
 });
 
 router.post('/sign-in', (req, res, next) => {
-    User.find({ email: req.body.email })
+    User.findOne({ email: req.body.email })
         .exec()
         .then(user => {
-            if (user.length < 1) {
+            if (!user) {
                 return res.status(401).json({
-                    message: 'Auth failed'
+                    message: 'No such user found'
                 });
             }
-            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+            bcrypt.compare(req.body.password, user.password, (err, result) => {
                 if (err) {
                     return res.status(401).json({
                         message: 'Auth failed'
@@ -49,10 +55,10 @@ router.post('/sign-in', (req, res, next) => {
                 if (result) {
                     const token = jwt.sign(
                         {
-                            email: user[0].email,
-                            userId: user[0]._id
+                            email: user.email,
+                            userId: user._id
                         },
-                        process.env.JWT_KEY,
+                        process.env.SECRET_KEY,
                         {
                             expiresIn: '1h'
                         }
@@ -63,7 +69,7 @@ router.post('/sign-in', (req, res, next) => {
                     });
                 }
                 res.status(401).json({
-                    message: 'Auth failed'
+                    message: 'Auth failed' 
                 });
             });
         })
