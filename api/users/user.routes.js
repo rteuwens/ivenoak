@@ -20,13 +20,15 @@ router.post('/sign-up', (req, res, next) => {
 
 router.post('/sign-in', (req, res, next) => {
     userService.authenticate(req.body)
-        .then(token => token ? res.json(token) : res.status(400).json({ message: 'username or password is incorrect' }))
+        .then(token => token ? res.json(token) : res.status(400).json({
+            message: 'username or password is incorrect'
+        }))
         .catch(err => next(err));
 });
 
 router.delete('/delete/:id', (req, res, next) => {
     userService.delete(req.params.id)
-        .then(() => res.status(200).json({ message: `successfully deleted ${req.params.id}`}))
+        .then(() => res.status(200).json({ message: `successfully deleted ${req.params.id}` }))
         .catch(err => next(err));
 });
 
