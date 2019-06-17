@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: 'Password can\'t be empty',
-        minlength : [8, 'Password must be at least 4 character long']
+        minlength : [8, 'Password must be at least 8 character long']
     },
     fullName: {
         type: String
@@ -33,32 +33,25 @@ const userSchema = mongoose.Schema({
 
 // password hashing middleware
 // http://devsmash.com/blog/password-authentication-with-mongoose-and-bcrypt
-userSchema.pre('save', function(next) {
-    var user = this;
+userSchema.pre('save', async function hashPassword(next) {
+    try {
+        var user = this;
+        
+        // only hash the password if it has been modified (or is new)
+        if (!user.isModified('password')) return next();
+        
+        // generate a salt
+        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+        const hash = await bcrypt.hash(user.password, salt);
+                
+        // override the cleartext password with the hashed one
+        user.password = hash;
+        next();
 
-    // only hash the password if it has been modified (or is new)
-    if (!user.isModified('password')) return next();
-
-    // generate a salt
-    bcrypt.genSalt(10, function(err, salt) {
-        if (err) return next(err);
-
-        // hash the password along with our new salt
-        bcrypt.hash(user.password, salt, function(err, hash) {
-            if (err) return next(err);
-
-            // override the cleartext password with the hashed one
-            user.password = hash;
-            next();
-        });
-    });
+    } catch(err) {
+        if (err) next(err);
+    };
 });
-
-// methods
-userSchema.methods.validPassword = async function(password) {
-    const match = await bcrypt.compare(password, this.local.password);
-    return match;
-};
 
 // imported in './user.routes.js'
 module.exports = mongoose.model('User', userSchema);
