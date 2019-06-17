@@ -33,7 +33,7 @@ async function authenticate({ email, password }) {
     const match = await bcrypt.compare(password, user.password);
 
     if (user && match) {
-        const { password, ...userWithoutPassword } = user.toObject();
+        const { password, transactions, ...userWithoutPassword } = user.toObject();
         const token = jwt.sign(
             { sub: user._id },
             process.env.SECRET_KEY,
