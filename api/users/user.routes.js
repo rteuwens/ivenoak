@@ -1,84 +1,25 @@
-// dependencies
+// third-party imports
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// model
+// local imports
 const User = require('./user.model');
+const userService = require('./user.service')
 
+// based on https://github.com/cornflourblue/node-mongo-registration-login-api/
 // routes
 router.post('/sign-up', (req, res, next) => {
-    User.findOne({ email: req.body.email })
-        .exec()
-        .then(user => {
-            if (user) {
-                return res.status(409).json({
-                    message: 'An account already exists under this email'
-                });
-            } else {
-                var newUser = new User({
-                    email: req.body.email,
-                    password: req.body.password 
-                });
-                newUser.save( (err) => {
-                    if (err) {
-                        return res.status(401).json({
-                            message: 'Something went wrong when registering',
-                            body: err.message
-                        });  
-                    }; 
-                    res.status(200).json({
-                        message: 'User registered',
-                        body: newUser
-                    });
-                });
-            }
-        });
+    userService.register(req.body)
+        .then(() => res.json({}))
+        .catch(err => next(err));
 });
 
 router.post('/sign-in', (req, res, next) => {
-    User.findOne({ email: req.body.email })
-        .exec()
-        .then(user => {
-            if (!user) {
-                return res.status(401).json({
-                    message: 'No such user found'
-                });
-            }
-            bcrypt.compare(req.body.password, user.password, (err, result) => {
-                if (err) {
-                    return res.status(401).json({
-                        message: 'Auth failed'
-                    });
-                }
-                if (result) {
-                    const token = jwt.sign(
-                        {
-                            email: user.email,
-                            userId: user._id
-                        },
-                        process.env.SECRET_KEY,
-                        {
-                            expiresIn: '1h'
-                        }
-                    );
-                    return res.status(200).json({
-                        message: 'Auth successful',
-                        token: token
-                    });
-                }
-                res.status(401).json({
-                    message: 'Auth failed' 
-                });
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            });
-        });
+    userService.authenticate(req.body)
+        .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' }))
+        .catch(err => next(err));
 });
 
 router.delete('/:userId', (req, res, next) => {

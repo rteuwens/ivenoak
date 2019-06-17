@@ -31,8 +31,7 @@ const userSchema = mongoose.Schema({
     // portfolio: portfolioSchema
 });
 
-// password hashing middleware
-// http://devsmash.com/blog/password-authentication-with-mongoose-and-bcrypt
+// mongoose prehook for password hashing
 userSchema.pre('save', async function hashPassword(next) {
     try {
         var user = this;
