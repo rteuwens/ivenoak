@@ -20,6 +20,7 @@ const {
 
 var options = {
     useNewUrlParser: true,
+    useFindAndModify: false, // https://mongoosejs.com/docs/deprecations.html#-findandmodify-
     dbName: MONGO_DATABASE
 };
 

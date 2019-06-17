@@ -37,7 +37,7 @@ async function authenticate({ email, password }) {
         const token = jwt.sign(
             { sub: user._id },
             process.env.SECRET_KEY,
-            { expiresIn: '1h'}
+            { expiresIn: '1h' }
         );
         return {
             ...userWithoutPassword,
@@ -57,7 +57,6 @@ async function update(id, userParam) {
 
     // copy userParam properties to user
     Object.assign(user, userParam);
-
     await user.save();
 }
 

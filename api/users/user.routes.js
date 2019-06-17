@@ -18,24 +18,14 @@ router.post('/sign-up', (req, res, next) => {
 
 router.post('/sign-in', (req, res, next) => {
     userService.authenticate(req.body)
-        .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' }))
+        .then(token => token ? res.json(token) : res.status(400).json({ message: 'Username or password is incorrect' }))
         .catch(err => next(err));
 });
 
-router.delete('/:userId', (req, res, next) => {
-    User.remove({ _id: req.params.userId })
-        .exec()
-        .then(
-            res.status(200).json({
-                message: 'User deleted'
-            })
-        )
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            });
-        });
+router.delete('/delete/:id', (req, res, next) => {
+    userService.delete(req.params.id)
+        .then(() => res.status(200).json({ message: `Successfully deleted ${req.params.id}`}))
+        .catch(err => next(err));
 });
 
 module.exports = router;
